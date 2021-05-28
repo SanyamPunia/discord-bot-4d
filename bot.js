@@ -1,5 +1,6 @@
 require("dotenv").config();
 
+const fetch = require("node-fetch");
 const mongoose =  require("mongoose");
 mongoose.connect("mongodb+srv://discordBot:discordBot@cluster0.ktnyw.mongodb.net/Data", { useNewUrlPaser: true, useUnifiedTopology: true });
 //117.96.249.199/32 ip
@@ -220,6 +221,30 @@ client.on("message", (message) => {
   }
 })
 
+// send gif
+client.on("message", async (message) => {
+  
+  let tokens = message.content.split(" ");
+  if(tokens[0] === PREFIX + "gif") {
+
+    let keywords = "dance";
+
+    if(tokens.length > 1) {
+      keywords = tokens.slice(1, tokens.length).join(" ");
+    }
+
+    let url = `https://g.tenor.com/v1/search?q=${keywords}&key=${process.env.TENORKEY}&contentfilter=high`;
+    let response = await fetch(url);
+    let json = await response.json();
+    const index = Math.floor(Math.random() * json.results.length)
+    message.channel.send(json.results[index].url);
+    message.channel.send(`Requested by ${message.author}`);
+  }
+})
+
+
+
+
 // CMD_HELP_LIST
 client.on("message", (message) => {
   if (message.content === PREFIX + "help") {
@@ -240,6 +265,10 @@ client.on("message", (message) => {
           {
             name: "$av",
             value: "access to the pfp of user who used the cmd"
+          },
+          {
+            name: "$gif <`keyword`>",
+            value: "sends the requested gif"
           },
           {
             name: "$pp",
@@ -320,14 +349,19 @@ client.on("message", async message => {
 
 })
 
-// $av -> access to the pfp of user who used the cmd
-// $howgay -> random gay %age 
-// $serverinfo -> server name and number of members as per the count 
-// $pp -> random dick size 
-// $ok -> logs back ok 
-// $randomage -> logs random age
-// $kick <userID> -> kick cmd for moderators
-// $ban <userID> -> ban cmd for moderators 
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
