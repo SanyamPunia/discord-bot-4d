@@ -1,9 +1,14 @@
 require("dotenv").config();
 
 const fetch = require("node-fetch");
-const mongoose =  require("mongoose");
-mongoose.connect("mongodb+srv://discordBot:discordBot@cluster0.ktnyw.mongodb.net/Data", { useNewUrlPaser: true, useUnifiedTopology: true });
-//117.96.249.199/32 ip
+const got = require("got");
+
+const mongoose = require("mongoose");
+mongoose.connect("mongodb+srv://discordBot:discordBot@cluster0.ktnyw.mongodb.net/Data", {
+  useNewUrlPaser: true,
+  useUnifiedTopology: true
+});
+
 
 const {
   Client,
@@ -19,6 +24,7 @@ const Levels = require("discord-xp");
 const PREFIX = "$";
 
 client.on("ready", () => {
+  client.user.setActivity("Managing 𝟰𝗗");
   console.log(`${client.user.tag} has logged in!`);
 });
 
@@ -70,10 +76,10 @@ client.on("message", async (message) => {
 client.on("message", (message) => {
   if (message.content === PREFIX + "ok") {
     const embed = new MessageEmbed()
-    // .setTitle("ok")
-    .setColor(0x3d84b8)
-    .setDescription("ok");
-  message.channel.send(embed);
+      // .setTitle("ok")
+      .setColor(0x3d84b8)
+      .setDescription("ok");
+    message.channel.send(embed);
 
   }
 })
@@ -102,28 +108,28 @@ client.on("message", (message) => {
     message.channel.send(embed);
   }
 
-    // dumb %age
-    if(message.content === PREFIX + "dumb") {
-      console.log("dumb");
-      let dumbRate = Math.floor(Math.random() * 100) + 1;
-      const embed = new MessageEmbed()
-        .setTitle("Dumb Rate")
-        .setColor(0x3d84b8)
-        .setDescription(
-          "Dumbass confirmed! You are " + dumbRate + "% dumb ;)"
-        );
-      message.channel.send(embed);
-    }
+  // dumb %age
+  if (message.content === PREFIX + "dumb") {
+    console.log("dumb");
+    let dumbRate = Math.floor(Math.random() * 100) + 1;
+    const embed = new MessageEmbed()
+      .setTitle("Dumb Rate")
+      .setColor(0x3d84b8)
+      .setDescription(
+        "Dumbass confirmed! You are " + dumbRate + "% dumb ;)"
+      );
+    message.channel.send(embed);
+  }
 
   // beepboop
-  if(message.content === PREFIX + "beep") {
+  if (message.content === PREFIX + "beep") {
     const embed = new MessageEmbed()
       .setColor(0x3d84b8)
       .setDescription("boop");
     message.channel.send(embed);
   }
   //reverseB
-  if(message.content === PREFIX + "boop") {
+  if (message.content === PREFIX + "boop") {
     const embed = new MessageEmbed()
       .setColor(0x3d84b8)
       .setDescription("beep");
@@ -131,14 +137,14 @@ client.on("message", (message) => {
   }
 
   // pingpong
-  if(message.content === PREFIX + "ping") {
+  if (message.content === PREFIX + "ping") {
     const embed = new MessageEmbed()
       .setColor(0x3d84b8)
       .setDescription("pong");
     message.channel.send(embed);
   }
   // pingpongB
-  if(message.content === PREFIX + "pong") {
+  if (message.content === PREFIX + "pong") {
     const embed = new MessageEmbed()
       .setColor(0x3d84b8)
       .setDescription("ping");
@@ -146,7 +152,7 @@ client.on("message", (message) => {
   }
 
   // message reactions
-  if(message.content === PREFIX + "react") {
+  if (message.content === PREFIX + "react") {
     const customEmoji_1 = message.guild.emojis.cache.find(emoji => emoji.name === 'great');
     // const customEmoji_2 = message.guild.emojis.cache.find(emoji => emoji.name === 'moldo');
 
@@ -223,13 +229,13 @@ client.on("message", (message) => {
 
 // send gif
 client.on("message", async (message) => {
-  
+
   let tokens = message.content.split(" ");
-  if(tokens[0] === PREFIX + "gif") {
+  if (tokens[0] === PREFIX + "gif") {
 
     let keywords = "dance";
 
-    if(tokens.length > 1) {
+    if (tokens.length > 1) {
       keywords = tokens.slice(1, tokens.length).join(" ");
     }
 
@@ -242,7 +248,35 @@ client.on("message", async (message) => {
   }
 })
 
+// Reddit meme gifs using api
+client.on("message", async (message) => {
 
+  if (message.content === PREFIX + "meme") {
+    const embed = new MessageEmbed()
+    got('https://www.reddit.com/r/memes/random/.json').then(response => {
+      let content = JSON.parse(response.body);
+      let permalink = content[0].data.children[0].data.permalink;
+      let memeUrl = `https://reddit.com${permalink}`;
+      let memeImage = content[0].data.children[0].data.url;
+      let memeTitle = content[0].data.children[0].data.title;
+      let memeUpvotes = content[0].data.children[0].data.ups;
+      let memeDownvotes = content[0].data.children[0].data.downs;
+      let memeNumComments = content[0].data.children[0].data.num_comments;
+      embed.setTitle(`${memeTitle}`)
+      embed.setURL(`${memeUrl}`)
+      embed.setImage(memeImage)
+      embed.setColor(0x3d84b8)
+      embed.setFooter(`👍 ${memeUpvotes} 👎 ${memeDownvotes} 💬 ${memeNumComments}`)
+      message.channel.send(embed);
+    })
+  }
+
+})
+
+// NSFW pornhub GIF
+client.on("message", (message) => {
+
+});
 
 
 // CMD_HELP_LIST
@@ -269,6 +303,10 @@ client.on("message", (message) => {
           {
             name: "$gif <`keyword`>",
             value: "sends the requested gif"
+          },
+          {
+            name: "$meme",
+            value: "random meme from r/memes"
           },
           {
             name: "$pp",
@@ -311,13 +349,13 @@ client.on("message", (message) => {
 
 // rank and leaderboard
 client.on("message", async message => {
-  if(!message.guild) return;
-  if(message.author.bot) return;
+  if (!message.guild) return;
+  if (message.author.bot) return;
 
   const randomXp = Math.floor(Math.random() * 9) + 1;
   const hasLeveledXp = await Levels.appendXp(message.author.id, message.guild.id, randomXp);
 
-  if(hasLeveledXp) {
+  if (hasLeveledXp) {
     const user = await Levels.fetch(message.author.id, message.guild.id);
     const embed = new MessageEmbed()
       .setTitle("Leveling Up!")
@@ -326,7 +364,7 @@ client.on("message", async message => {
     message.channel.send(embed);
   }
 
-  if(message.content === PREFIX + "rank") {
+  if (message.content === PREFIX + "rank") {
     const user = await Levels.fetch(message.author.id, message.guild.id);
     const embed = new MessageEmbed()
       .setTitle("Level")
