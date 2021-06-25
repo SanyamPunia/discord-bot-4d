@@ -4,7 +4,7 @@ const fetch = require("node-fetch");
 const got = require("got");
 
 const mongoose = require("mongoose");
-mongoose.connect("mongodb+srv://discordBot:discordBot@cluster0.ktnyw.mongodb.net/Data", {
+mongoose.connect("...", {
   useNewUrlPaser: true,
   useUnifiedTopology: true
 });
@@ -19,7 +19,6 @@ const client = new Client({
   partials: ["MESSAGE", "REACTION"],
 });
 const Levels = require("discord-xp");
-//Levels.setUrl("mongodb+srv://discordBot:discordBot@4dbotcluster.ktnyw.mongodb.net/Data")
 
 const PREFIX = "$";
 
